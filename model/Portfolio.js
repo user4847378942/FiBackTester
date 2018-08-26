@@ -1,0 +1,71 @@
+module.exports = class Portfolio {
+	constructor(yearlyDesiredIncome, economicData, investmentCatalog) {
+		this.yearlyDesiredIncome = yearlyDesiredIncome;
+		this.portfolio = {}
+		this.economicData = economicData;
+		this.investmentCatalog = investmentCatalog;
+	}
+
+	addMoney(date, symbol, moneyAmount) {
+		let existingHolding = this.portfolio[symbol];
+
+		let investment = this.investmentCatalog[symbol];
+		let amount = moneyAmount / investment.getPrice(date);
+
+		if (existingHolding) {
+			this.portfolio[symbol] += amount;
+		} else {
+			this.portfolio[symbol] = amount;
+		}
+	}
+
+	substractFees() {
+		for (let symbol in this.portfolio) {
+			let investment = this.investmentCatalog[symbol];
+			this.portfolio[symbol] -=
+				this.portfolio[symbol] * investment.expenses;
+		}
+	}
+
+	rebalance(date, fiProgress, strategy) {
+		let totalValue = this.getValue(date);
+		// Make a copy of the current portfolio, because we might rebalance.
+		let portfolio = JSON.parse(JSON.stringify(this.portfolio));
+		for (let symbol in portfolio) {
+			let investment = this.investmentCatalog[symbol];
+
+			// Target
+			let allocations = strategy.allocations(fiProgress);
+			let targetAllocation = allocations[symbol];
+			let desiredValue = targetAllocation * totalValue;
+
+			// Actual
+			let price = investment.getPrice(date);
+			let currentValue = portfolio[symbol] * price;
+			let diffValue = desiredValue - currentValue;
+			let percentageDiff = Math.abs(diffValue / totalValue);
+			if (strategy.rebalance(date, percentageDiff)) {
+				this.addMoney(date, symbol, diffValue);
+				// console.log(`Rebalancing ${symbol}: $${diffValue}`);
+			}
+		}
+	}
+
+	adjustTargetForInflation(date) {
+		let inflationRate = 1 + this.economicData.getInflation(date);
+		this.yearlyDesiredIncome = inflationRate * this.yearlyDesiredIncome;
+	}
+
+	getValue(date) {
+		let result = 0;
+		for (let symbol in this.portfolio) {
+			let investment = this.investmentCatalog[symbol];
+			result += this.portfolio[symbol] * investment.getPrice(date);
+		}
+		return result;
+	}
+
+	fiProgress(date, swr) {
+		return swr * this.getValue(date) / this.yearlyDesiredIncome;
+	}
+}
