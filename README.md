@@ -7,4 +7,15 @@ This tool allows you to backtest a investment strategy using historical data sin
 - `npm install`
 
 ## Usage
-`node index.js --portfolioValue=100000 --monthlySavings=1000 --DesiredIncomeYear=24000 --savingsIncreaseYear=0.03 --strategy=default`
+`node index.js --portfolioValue=100000 --monthlySavings=1000 --desiredIncomeYear=24000 --savingsIncreaseYear=0.03 --strategy=default`
+
+## Debugging
+Launch the above node command with:
+`node --inspect-brk ...`
+Then navigate in Chrome to `chrome://inspect`
+
+## Contact
+Please DM me on reddit if you have any questions or found any issues: https://www.reddit.com/user/user4847378942/
+
+## Data
+Data courtesy of EarlyRetirementNow: https://docs.google.com/spreadsheets/d/1QGrMm6XSGWBVLI8I_DOAeJV5whoCnSdmaR8toQB2Jz8/edit#gid=1477530195
