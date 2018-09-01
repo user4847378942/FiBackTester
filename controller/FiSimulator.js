@@ -12,35 +12,35 @@ module.exports = class FiSimulator {
 		let results = {};
 		for (var i = 0; i < dates.length; i++) {
 			let startDate = dates[i];
+			if (strategy.startDate && strategy.startDate > startDate) continue;
+
 			let monthsPassed = 0;
 			let fiProgress = 0;
 			let portfolio = new Portfolio(config.desiredIncomeYear, economicData,
 				investmentCatalog);
-			// Add initial value
-			let allocations = strategy.allocations(fiProgress);
-			for (let symbol in allocations) {
-				let investment = investmentCatalog[symbol];
-				let allocation = allocations[symbol];
-
-				portfolio.addMoney(startDate, symbol,
-					allocation * config.portfolioValue);
-			}
+			portfolio.setInitialValue(startDate, config.portfolioValue,
+				strategy.allocations(fiProgress))
 
 			for (var j = i; j < dates.length; j++) {
 				let date = dates[j];
-				allocations = strategy.allocations(fiProgress, date, investmentCatalog);
+				let allocations = strategy.allocations(fiProgress, date,
+					investmentCatalog);
+
+				// Monthly contribution
 				for (let symbol in allocations) {
 					let investment = investmentCatalog[symbol];
 					let allocation = allocations[symbol];
-
-					portfolio.adjustTargetForInflation(date);
-					portfolio.rebalance(date, allocations, strategy);
-					portfolio.substractFees();
 					portfolio.addMoney(date, symbol,
 						allocation * strategy.contribution(monthsPassed / 12));
 				}
+
+				portfolio.substractFees();
+				portfolio.rebalance(date, allocations, strategy);
+				portfolio.adjustTargetForInflation(date);
+
 				monthsPassed++;
-				let swr = strategy.swr(date, economicData);
+				let cape = economicData.getCape(date)
+				let swr = strategy.swr(date, cape);
 				fiProgress = portfolio.fiProgress(date, swr);
 				if (fiProgress >= 1) {
 					results[startDate] = {
@@ -59,8 +59,10 @@ module.exports = class FiSimulator {
 
 		// Define Investments
 		let investmentCatalog = {
-			'spxtr': new Investment('spxtr', 0.0004 / 12),
-			'tnxtr': new Investment('tnxtr', 0.0005 / 12)
+			'equityUs': new Investment('equityUs', 0.0004 / 12),
+			'bondUs': new Investment('bondUs', 0.0005 / 12),
+			'equityIntl': new Investment('equityIntl', 0.0011 / 12),
+			'cashUs': new Investment('cashUs', 0.0016 / 12)
 		}
 
 		// Read historic data
@@ -77,7 +79,7 @@ module.exports = class FiSimulator {
 			strategy.calculateStats(result);
 			results.push(strategy)
 		}
-		results = _.orderBy(results, ['score'],['asc']);
+		results = _.orderBy(results, ['score'], ['asc']);
 		console.log('\nFinished! Here are the results...\n')
 		console.log('Name | AVG |  MAX  | RANK')
 		console.log('--------------------------');;

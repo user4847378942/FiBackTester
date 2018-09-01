@@ -2,13 +2,19 @@ module.exports = class EconomicData {
 	constructor() {
 		this.data = {};
 	}
-	addData(date, inflation, swr) {
-		this.data[date] = [inflation, swr];
+
+	addData(date, inflation, cape) {
+		this.data[date] = {
+			inflation,
+			cape
+		}
 	}
+
 	getInflation(date) {
-		return this.data[date][0];
+		return this.data[date].inflation;
 	}
-	getSWR(date) {
-		return this.data[date][1];
+
+	getCape(date) {
+		return this.data[date].cape;
 	}
 }

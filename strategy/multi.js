@@ -10,28 +10,32 @@ module.exports = class StrategyBuilder {
 			// return false;
 			return true;
 		};
-		let swr = (date, economicData) => {
-			// return 0.04; // 4%
-			return economicData.getSWR(date) // CAPE based
+		let swr = (date, cape) => {
+			return 0.0208 + (0.4 * (1 / cape));
 		};
 
 		let strategies = [];
-		for (var i = 100; i >= 0; i--) {
-			let equities = i;
+		for (let equities = 100; equities >= 0; equities--) {
 			let bonds = 100 - equities;
-			let strategy = new Strategy(`${equities}/${bonds}`,
+			for (let domestic = 100; domestic >= 0; domestic--) {
+				let intl = 100 - domestic;
+
+				let strategy = new Strategy(`Stocks/Bonds: ${equities}/${bonds}; US/Intl: ${domestic}/${intl}`,
 					monthlyContribution,
 					// Allocation
 					(fiProgress) => {
 						return {
-							'spxtr': equities / 100,
-							'tnxtr': bonds / 100
+							'equityUs': equities / 100 * domestic / 100,
+							'equityIntl': equities / 100 * intl / 100,
+							'bondUs': bonds / 100
 						}
 					},
 					rebalance,
-					swr
+					swr,
+					new Date('Januar 01, 1970 00:00:00')
 				);
-			strategies.push(strategy);
+				strategies.push(strategy);
+			}
 		}
 
 		return strategies;

@@ -22,7 +22,7 @@ module.exports = class Parser {
 		for (var i = 1; i < datas.length; i++) {
 			let data = datas[i];
 			let row = new Row(data[0], data[1], data[2], data[3], data[4],
-				data[5], data[6], data[7], data[8], data[9]);
+				data[5], data[6], data[7]);
 			rows.push(row);
 		}
 		return rows;
@@ -41,10 +41,9 @@ module.exports = class Parser {
 			// Economic Data
 			let inflation = 0.0;
 			if (previousRow) {
-				inflation = (row.cpi - previousRow.cpi) / previousRow.cpi;
+				inflation = (row.cpiUs - previousRow.cpiUs) / previousRow.cpiUs;
 			}
-			let swr = 0.0208 + (0.4 * (1 / row.cape));
-			economicData.addData(date, inflation, swr);
+			economicData.addData(date, inflation, row.equityUsCape);
 
 			// Investment Data
 			for (let symbol in investmentCatalog) {
