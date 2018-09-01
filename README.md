@@ -14,6 +14,7 @@ You can run different strategies, here are some predefined ones:
  - `cape`: variable SWR based on CAPE
  - `multi`: runs all equity/bond variations
  - `capeAndBondTent`: cape rule + using a bond tent
+ - `timingMomentum`: timing strategy, price > sma200 --> stocks, else bonds
 
 You can simply copy any of the strategies and add your own in the `strategy` folder.
 

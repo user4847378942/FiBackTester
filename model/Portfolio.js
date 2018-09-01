@@ -27,26 +27,27 @@ module.exports = class Portfolio {
 		}
 	}
 
-	rebalance(date, fiProgress, strategy) {
+	rebalance(date, allocations, strategy) {
 		let totalValue = this.getValue(date);
 		// Make a copy of the current portfolio, because we might rebalance.
 		let portfolio = JSON.parse(JSON.stringify(this.portfolio));
 		for (let symbol in portfolio) {
 			let investment = this.investmentCatalog[symbol];
 
-			// Target
-			let allocations = strategy.allocations(fiProgress);
-			let targetAllocation = allocations[symbol];
-			let desiredValue = targetAllocation * totalValue;
-
 			// Actual
 			let price = investment.getPrice(date);
 			let currentValue = portfolio[symbol] * price;
+
+			// Target
+			let targetAllocation = allocations[symbol];
+			let desiredValue = targetAllocation * totalValue;
+
+			// Diff
 			let diffValue = desiredValue - currentValue;
 			let percentageDiff = Math.abs(diffValue / totalValue);
+
 			if (strategy.rebalance(date, percentageDiff)) {
 				this.addMoney(date, symbol, diffValue);
-				// console.log(`Rebalancing ${symbol}: $${diffValue}`);
 			}
 		}
 	}

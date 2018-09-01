@@ -49,7 +49,7 @@ module.exports = class Parser {
 			// Investment Data
 			for (let symbol in investmentCatalog) {
 				let investment = investmentCatalog[symbol];
-				investment.setPrice(date, row[symbol]);
+				investment.setPrice(date, parseFloat(row[symbol]));
 			}
 		}
 		return dates;

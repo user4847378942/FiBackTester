@@ -28,13 +28,13 @@ module.exports = class FiSimulator {
 
 			for (var j = i; j < dates.length; j++) {
 				let date = dates[j];
-				allocations = strategy.allocations(fiProgress);
+				allocations = strategy.allocations(fiProgress, date, investmentCatalog);
 				for (let symbol in allocations) {
 					let investment = investmentCatalog[symbol];
 					let allocation = allocations[symbol];
 
 					portfolio.adjustTargetForInflation(date);
-					portfolio.rebalance(date, fiProgress, strategy);
+					portfolio.rebalance(date, allocations, strategy);
 					portfolio.substractFees();
 					portfolio.addMoney(date, symbol,
 						allocation * strategy.contribution(monthsPassed / 12));
