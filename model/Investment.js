@@ -4,12 +4,15 @@ module.exports = class Investment {
 		this.expenses = expenses;
 		this.data = {};
 	}
+
 	setPrice(date, price) {
 		this.data[date] = price;
 	}
+
 	getPrice(date) {
 		return this.data[date];
 	}
+	
 	// 10 Month / 200 day
 	getSma200(date) {
 		let result = this.getPrice(date);

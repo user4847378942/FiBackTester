@@ -9,93 +9,93 @@ module.exports = class StrategyBuilder {
 		let rebalance = (date, diff) => {
 			return true;
 		};
-		let swr = (date, economicData) => {
-			return economicData.getSWR(date) // CAPE based
+		let swr = (date, cape) => {
+			return 0.0208 + (0.4 * (1 / cape));
 		};
 
 		let strategies = [
-			new Strategy('100/0 - No Bond Tent',
+			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0',
 				monthlyContribution,
 				// Allocation
 				(fiProgress) => {
 					return {
-						'spxtr': 1.0,
-						'tnxtr': 0.0
+						'equityUs': 1.0,
+						'bondUs': 0.0
 					}
 				},
 				rebalance,
 				swr
 			),
-			new Strategy('100/0 - 95% Bond Tent Treshold',
+			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 95% Bond Tent Treshold',
 				monthlyContribution,
 				// Allocation
 				(fiProgress) => {
-					if (fiProgress > .95) {
+					if (fiProgress > 0.95) {
 						return {
-							'spxtr': 0.25,
-							'tnxtr': 0.75
+							'equityUs': 0.25,
+							'bondUs': 0.75
 						}
 					} else {
 						return {
-							'spxtr': 1.0,
-							'tnxtr': 0.0
-						}
-					}
-				},
-				rebalance,
-				swr
-			),
-			new Strategy('100/0 - 90% Bond Tent Treshold',
-				monthlyContribution,
-				// Allocation
-				(fiProgress) => {
-					if (fiProgress > .9) {
-						return {
-							'spxtr': 0.25,
-							'tnxtr': 0.75
-						}
-					} else {
-						return {
-							'spxtr': 1.0,
-							'tnxtr': 0.0
+							'equityUs': 1.0,
+							'bondUs': 0.0
 						}
 					}
 				},
 				rebalance,
 				swr
 			),
-			new Strategy('100/0 - 80% Bond Tent Treshold',
+			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 90% Bond Tent Treshold',
 				monthlyContribution,
 				// Allocation
 				(fiProgress) => {
-					if (fiProgress > .8) {
+					if (fiProgress > 0.9) {
 						return {
-							'spxtr': 0.25,
-							'tnxtr': 0.75
+							'equityUs': 0.25,
+							'bondUs': 0.75
 						}
 					} else {
 						return {
-							'spxtr': 1.0,
-							'tnxtr': 0.0
+							'equityUs': 1.0,
+							'bondUs': 0.0
 						}
 					}
 				},
 				rebalance,
 				swr
 			),
-			new Strategy('100/0 - 70% Bond Tent Treshold',
+			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 80% Bond Tent Treshold',
 				monthlyContribution,
 				// Allocation
 				(fiProgress) => {
-					if (fiProgress > .7) {
+					if (fiProgress > 0.8) {
 						return {
-							'spxtr': 0.25,
-							'tnxtr': 0.75
+							'equityUs': 0.25,
+							'bondUs': 0.75
 						}
 					} else {
 						return {
-							'spxtr': 1.0,
-							'tnxtr': 0.0
+							'equityUs': 1.0,
+							'bondUs': 0.0
+						}
+					}
+				},
+				rebalance,
+				swr
+			),
+			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 70% Bond Tent Treshold',
+				monthlyContribution,
+				// Allocation
+				(fiProgress) => {
+					if (fiProgress > 0.7) {
+						return {
+							'equityUs': 0.25,
+							'bondUs': 0.75
+						}
+					} else {
+						return {
+							'equityUs': 1.0,
+							'bondUs': 0.0
 						}
 					}
 				},

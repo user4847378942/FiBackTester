@@ -6,6 +6,15 @@ module.exports = class Portfolio {
 		this.investmentCatalog = investmentCatalog;
 	}
 
+	setInitialValue(date, value, allocations) {
+		for (let symbol in allocations) {
+			let investment = this.investmentCatalog[symbol];
+			let allocation = allocations[symbol];
+
+			this.addMoney(date, symbol, allocation * value);
+		}
+	}
+
 	addMoney(date, symbol, moneyAmount) {
 		let existingHolding = this.portfolio[symbol];
 
@@ -46,7 +55,7 @@ module.exports = class Portfolio {
 			let diffValue = desiredValue - currentValue;
 			let percentageDiff = Math.abs(diffValue / totalValue);
 
-			if (strategy.rebalance(date, percentageDiff)) {
+			if (diffValue > 0 && strategy.rebalance(date, percentageDiff)) {
 				this.addMoney(date, symbol, diffValue);
 			}
 		}
