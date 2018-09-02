@@ -8,7 +8,10 @@ module.exports = class StrategyBuilder {
 			return config.monthlySavings * (1 + years * config.savingsIncreaseYear);
 		};
 		let rebalance = (date, diff) => {
-			return true;
+			if (diff > 0.05) {
+				return true;
+			}
+			return false;
 		};
 		let swr = (date, cape) => {
 			return 0.04; // 4% Rule

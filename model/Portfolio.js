@@ -10,6 +10,8 @@ module.exports = class Portfolio {
 		this.moneyFormatter = new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
+			maximumFractionDigits: 0,
+			minimumFractionDigits: 0,
 		});
 	}
 
@@ -98,6 +100,6 @@ module.exports = class Portfolio {
 		}
 
 		let dateString = moment(date).format('MM/YYYY');
-		console.log(`${dateString} | ${swr.toFixed(1)} | ${fiProgress.toFixed(2)} | ${this.moneyFormatter.format(ttl.toFixed(0))} | ${JSON.stringify(result)}`)
+		console.log(`${dateString} | ${swr.toFixed(1)}% | ${fiProgress.toFixed(2)}% | ${this.moneyFormatter.format(ttl.toFixed(0))} | ${JSON.stringify(result)}`)
 	}
 }

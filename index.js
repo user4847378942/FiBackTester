@@ -3,6 +3,10 @@ const argv = require('minimist')(process.argv.slice(2));
 const FiSimulator = require('./controller/FiSimulator');
 
 
+if (argv.debug) {
+	process.env.DEBUG = 1;
+}
+
 const config = {
 	portfolioValue: argv.portfolioValue || 500000,
 	monthlySavings: argv.monthlySavings || 14000,
