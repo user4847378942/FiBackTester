@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const moment = require('moment');
 
 const EconomicData = require('../model/EconomicData');
 const Investment = require('../model/Investment');
@@ -21,10 +22,16 @@ module.exports = class FiSimulator {
 			portfolio.setInitialValue(startDate, config.portfolioValue,
 				strategy.allocations(fiProgress))
 
+			if (process.env.DEBUG) {
+				console.log(`\n${moment(startDate).format('MM/YYYY')} Cohort`)
+			}
+
 			for (var j = i; j < dates.length; j++) {
 				let date = dates[j];
 				let allocations = strategy.allocations(fiProgress, date,
 					investmentCatalog);
+
+				portfolio.substractFees();
 
 				// Monthly contribution
 				for (let symbol in allocations) {
@@ -34,14 +41,18 @@ module.exports = class FiSimulator {
 						allocation * strategy.contribution(monthsPassed / 12));
 				}
 
-				portfolio.substractFees();
 				portfolio.rebalance(date, allocations, strategy);
+
 				portfolio.adjustTargetForInflation(date);
 
 				monthsPassed++;
 				let cape = economicData.getCape(date)
 				let swr = strategy.swr(date, cape);
 				fiProgress = portfolio.fiProgress(date, swr);
+
+				if (process.env.DEBUG) {
+					portfolio.log(date, swr * 100, fiProgress * 100);
+				}
 				if (fiProgress >= 1) {
 					results[startDate] = {
 						'months': monthsPassed,
@@ -84,8 +95,8 @@ module.exports = class FiSimulator {
 		console.log('Name | AVG |  MAX  | RANK')
 		console.log('--------------------------');;
 		for (let s of results) {
-			console.log(`${s.name}: ${s.stats.mean.toFixed(2)} / ` +
-				`${s.stats.max.toFixed(2)} ` + `[${s.score.toFixed(2)}]`)
+			console.log(`${s.name}: ${s.stats.mean.toFixed(2)} years / ` +
+				`${s.stats.max.toFixed(2)} years ` + `[${s.score.toFixed(2)}]`)
 		}
 	}
 }

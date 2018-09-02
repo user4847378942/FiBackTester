@@ -1,9 +1,16 @@
+const moment = require('moment');
+
 module.exports = class Portfolio {
 	constructor(yearlyDesiredIncome, economicData, investmentCatalog) {
 		this.yearlyDesiredIncome = yearlyDesiredIncome;
 		this.portfolio = {}
 		this.economicData = economicData;
 		this.investmentCatalog = investmentCatalog;
+
+		this.moneyFormatter = new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+		});
 	}
 
 	setInitialValue(date, value, allocations) {
@@ -53,7 +60,7 @@ module.exports = class Portfolio {
 			let diffValue = desiredValue - currentValue;
 			let percentageDiff = Math.abs(diffValue / totalValue);
 
-			if (diffValue > 0 && strategy.rebalance(date, percentageDiff)) {
+			if (diffValue !== 0 && strategy.rebalance(date, percentageDiff)) {
 				this.addMoney(date, symbol, diffValue);
 			}
 		}
@@ -75,5 +82,22 @@ module.exports = class Portfolio {
 
 	fiProgress(date, swr) {
 		return swr * this.getValue(date) / this.yearlyDesiredIncome;
+	}
+
+	log(date, swr, fiProgress) {
+		let result = {}
+		let ttl = 0;
+		for (let symbol in this.portfolio) {
+			let investment = this.investmentCatalog[symbol];
+
+			// Actual
+			let price = investment.getPrice(date);
+			let value = this.portfolio[symbol] * price;
+			ttl += value;
+			result[symbol] = this.moneyFormatter.format(value);
+		}
+
+		let dateString = moment(date).format('MM/YYYY');
+		console.log(`${dateString} | ${swr.toFixed(1)} | ${fiProgress.toFixed(2)} | ${this.moneyFormatter.format(ttl.toFixed(0))} | ${JSON.stringify(result)}`)
 	}
 }
