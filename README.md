@@ -10,11 +10,12 @@ This tool allows you to backtest a investment strategy using historical data sin
 `node index.js --portfolioValue=100000 --monthlySavings=1000 --desiredIncomeYear=24000 --savingsIncreaseYear=0.03 --strategy=default`
 
 You can run different strategies, here are some predefined ones:
- - `default`: 4% SWR
+ - `default`: 4% SWR, 100% stocks; 60/40 US/Intl allocation
  - `cape`: variable SWR based on CAPE
- - `multi`: runs all equity/bond variations
+ - `multi`: runs all equity/bond and us/intl variations
  - `capeAndBondTent`: cape rule + using a bond tent
  - `timingMomentum`: timing strategy, price > sma200 --> stocks, else bonds
+ - ... and some more ;)
 
 You can simply copy any of the strategies and add your own in the `strategy` folder.
 
