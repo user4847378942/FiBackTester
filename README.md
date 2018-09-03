@@ -63,4 +63,5 @@ Stocks/Bonds: 0/100; US/Intl: 60/40: 10.45 years / 15.50 years [25.95]
 Please DM me on reddit if you have any questions or found any issues: https://www.reddit.com/user/user4847378942/
 
 ## Data
-Data courtesy of EarlyRetirementNow: https://docs.google.com/spreadsheets/d/1QGrMm6XSGWBVLI8I_DOAeJV5whoCnSdmaR8toQB2Jz8/edit#gid=1477530195
+Data Source: https://docs.google.com/spreadsheets/d/1lev2_w6ScQVtOKJpP2TIWATI2KCGE0AfQmQWIy6THNw/edit?usp=sharing
+
