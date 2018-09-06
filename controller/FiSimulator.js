@@ -32,6 +32,7 @@ module.exports = class FiSimulator {
 					investmentCatalog);
 
 				portfolio.substractFees();
+				portfolio.rebalance(date, allocations, strategy);
 
 				// Monthly contribution
 				for (let symbol in allocations) {
@@ -40,8 +41,6 @@ module.exports = class FiSimulator {
 					portfolio.addMoney(date, symbol,
 						allocation * strategy.contribution(monthsPassed / 12));
 				}
-
-				portfolio.rebalance(date, allocations, strategy);
 
 				portfolio.adjustTargetForInflation(date);
 

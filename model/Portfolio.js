@@ -23,6 +23,8 @@ module.exports = class Portfolio {
 	}
 
 	addMoney(date, symbol, moneyAmount) {
+		if (!moneyAmount || moneyAmount === 0) return;
+
 		let existingHolding = this.portfolio[symbol];
 
 		let investment = this.investmentCatalog[symbol];
@@ -44,28 +46,30 @@ module.exports = class Portfolio {
 	}
 
 	rebalance(date, allocations, strategy) {
-		let totalValue = this.getValue(date);
-		// Make a copy of the current portfolio, because we might rebalance.
-		let portfolio = JSON.parse(JSON.stringify(this.portfolio));
-		for (let symbol in portfolio) {
+		let portfolio = this.getValue(date);
+		if (process.env.DEBUG) console.log('Portfolio: ' + JSON.stringify(portfolio));
+		for (let symbol in this.investmentCatalog) {
 			let investment = this.investmentCatalog[symbol];
 
 			// Actual
-			let price = investment.getPrice(date);
-			let currentValue = portfolio[symbol] * price;
+			let currentValue = portfolio.holdings[symbol] || 0;
 
 			// Target
-			let targetAllocation = allocations[symbol];
-			let desiredValue = targetAllocation * totalValue;
+			let targetAllocation = allocations[symbol] || 0;
+			let desiredValue = targetAllocation * portfolio.totalValue;
 
 			// Diff
 			let diffValue = desiredValue - currentValue;
-			let percentageDiff = Math.abs(diffValue / totalValue);
+			let percentageDiff = Math.abs(diffValue / portfolio.totalValue);
 
 			if (diffValue !== 0 && strategy.rebalance(date, percentageDiff)) {
+				if (process.env.DEBUG) console.log(`Change to ${symbol} $${diffValue}`);
 				this.addMoney(date, symbol, diffValue);
 			}
 		}
+		let portfolioAfterRebalancing = this.getValue(date);
+		let portfolioDiff = Math.abs(portfolio.totalValue - portfolioAfterRebalancing.totalValue);
+		console.assert(portfolioDiff < 0.01, 'Total portfolio value before and after rebalancing is not equal.');
 	}
 
 	adjustTargetForInflation(date) {
@@ -73,33 +77,32 @@ module.exports = class Portfolio {
 		this.yearlyDesiredIncome = inflationRate * this.yearlyDesiredIncome;
 	}
 
-	getValue(date) {
-		let result = 0;
+	getValue(date, formatted) {
+		let result = {
+			totalValue: 0,
+			holdings: {}
+		}
 		for (let symbol in this.portfolio) {
 			let investment = this.investmentCatalog[symbol];
-			result += this.portfolio[symbol] * investment.getPrice(date);
+			let price = investment.getPrice(date);
+			let value = this.portfolio[symbol] * price;
+			result.totalValue += value;
+			if (formatted) {
+				result.holdings[symbol] = this.moneyFormatter.format(value);
+			} else {
+				result.holdings[symbol] = value;
+			}
 		}
 		return result;
 	}
 
 	fiProgress(date, swr) {
-		return swr * this.getValue(date) / this.yearlyDesiredIncome;
+		return swr * this.getValue(date).totalValue / this.yearlyDesiredIncome;
 	}
 
 	log(date, swr, fiProgress) {
-		let result = {}
-		let ttl = 0;
-		for (let symbol in this.portfolio) {
-			let investment = this.investmentCatalog[symbol];
-
-			// Actual
-			let price = investment.getPrice(date);
-			let value = this.portfolio[symbol] * price;
-			ttl += value;
-			result[symbol] = this.moneyFormatter.format(value);
-		}
-
+		let portfolio = this.getValue(date, true);
 		let dateString = moment(date).format('MM/YYYY');
-		console.log(`${dateString} | ${swr.toFixed(1)}% | ${fiProgress.toFixed(2)}% | ${this.moneyFormatter.format(ttl.toFixed(0))} | ${JSON.stringify(result)}`)
+		console.log(`${dateString} | ${swr.toFixed(1)}% | ${fiProgress.toFixed(2)}% | ${this.moneyFormatter.format(portfolio.totalValue.toFixed(0))} | ${JSON.stringify(portfolio.holdings)}`)
 	}
 }
