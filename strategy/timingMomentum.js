@@ -10,8 +10,8 @@ module.exports = class StrategyBuilder {
 			return true;
 		};
 		let swr = (date, cape) => {
-			// return 0.04;
-			return 0.0208 + (0.4 * (1 / cape));
+			return 0.04;
+			// return 0.0208 + (0.4 * (1 / cape));
 		};
 
 		let strategies = [
