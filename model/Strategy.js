@@ -2,13 +2,14 @@ const Stats = require('fast-stats').Stats;
 
 
 module.exports = class Strategy {
-	constructor(name, contribution, allocations, rebalance, swr, startDate) {
+	constructor(name, contribution, allocations, rebalance, swr, startDate, initialPortfolioValue) {
 		this.name = name;
 		this.allocations = allocations;
 		this.contribution = contribution;
 		this.swr = swr;
 		this.rebalance = rebalance;
 		this.startDate = startDate;
+		this.initialPortfolioValue = initialPortfolioValue;
 	}
 
 	calculateStats(results) {

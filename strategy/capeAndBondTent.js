@@ -1,5 +1,5 @@
 const Strategy = require('../model/Strategy');
-
+const assert = require('assert');
 
 module.exports = class StrategyBuilder {
 	static build(config) {
@@ -11,6 +11,10 @@ module.exports = class StrategyBuilder {
 		};
 		let swr = (date, cape) => {
 			return 0.0175 + (0.5 * (1 / cape));
+		};
+		let initialPortfolioValue = (startDate, config, economicData) => {
+			assert(config.cape != null, 'Must provide --cape value.');
+			return config.portfolioValue * economicData.getCape(startDate) / config.cape;
 		};
 
 		let strategies = [
@@ -24,7 +28,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 95% Bond Tent Treshold',
 				monthlyContribution,
@@ -43,7 +49,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 90% Bond Tent Treshold',
 				monthlyContribution,
@@ -62,7 +70,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 80% Bond Tent Treshold',
 				monthlyContribution,
@@ -81,7 +91,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 100/0 - 70% Bond Tent Treshold',
 				monthlyContribution,
@@ -100,7 +112,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 		];
 

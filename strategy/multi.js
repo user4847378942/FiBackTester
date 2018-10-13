@@ -1,5 +1,5 @@
 const Strategy = require('../model/Strategy');
-
+const assert = require('assert');
 
 module.exports = class StrategyBuilder {
 	static build(config) {
@@ -10,7 +10,11 @@ module.exports = class StrategyBuilder {
 			return (diff > 0.05);
 		};
 		let swr = (date, cape) => {
+			assert(config.cape != null, 'Must provide --cape value.');
 			return 0.0175 + (0.5 * (1 / cape));
+		};
+		let initialPortfolioValue = (startDate, config, economicData) => {
+			return config.portfolioValue * economicData.getCape(startDate) / config.cape;
 		};
 
 		let strategies = [];
@@ -28,7 +32,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			);
 			strategies.push(strategy);
 		}

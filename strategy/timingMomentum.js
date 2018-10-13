@@ -1,5 +1,5 @@
 const Strategy = require('../model/Strategy');
-
+const assert = require('assert');
 
 module.exports = class StrategyBuilder {
 	static build(config) {
@@ -10,8 +10,11 @@ module.exports = class StrategyBuilder {
 			return true;
 		};
 		let swr = (date, cape) => {
-			return 0.04;
-			// return 0.0175 + (0.5 * (1 / cape));
+			return 0.0175 + (0.5 * (1 / cape));
+		};
+		let initialPortfolioValue = (startDate, config, economicData) => {
+			assert(config.cape != null, 'Must provide --cape value.');
+			return config.portfolioValue * economicData.getCape(startDate) / config.cape;
 		};
 
 		let strategies = [
@@ -27,7 +30,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 60/40 - timing us-only (bonds)',
 				monthlyContribution,
@@ -60,7 +64,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 60/40 - timing (bonds)',
 				monthlyContribution,
@@ -110,7 +115,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 60/40; US/Intl: 60/40 - timing (bonds)',
 				monthlyContribution,
@@ -160,7 +166,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 60/40 - timing (other equity/bonds)',
 				monthlyContribution,
@@ -210,7 +217,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 60/40 - timing (other equity/cash)',
 				monthlyContribution,
@@ -260,7 +268,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('Januar 01, 1970 00:00:00')
+				new Date('Januar 01, 1970 00:00:00'),
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 100/0; US/Intl: 60/40 - timing (bonds/cash)',
 				monthlyContribution,
@@ -336,7 +345,8 @@ module.exports = class StrategyBuilder {
 				},
 				rebalance,
 				swr,
-				new Date('June 01, 1974 00:00:00')
+				new Date('June 01, 1974 00:00:00'),
+				initialPortfolioValue
 			),
 		];
 

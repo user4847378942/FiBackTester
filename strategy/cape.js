@@ -1,5 +1,5 @@
 const Strategy = require('../model/Strategy');
-
+const assert = require('assert');
 
 module.exports = class StrategyBuilder {
 	static build(config) {
@@ -11,6 +11,10 @@ module.exports = class StrategyBuilder {
 		};
 		let swr = (date, cape) => {
 			return 0.0175 + (0.5 * (1 / cape));
+		};
+		let initialPortfolioValue = (startDate, config, economicData) => {
+			assert(config.cape != null, 'Must provide --cape value.');
+			return config.portfolioValue * economicData.getCape(startDate) / config.cape;
 		};
 
 		let strategies = [
@@ -24,7 +28,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 80/20; US/Intl: 100/0',
 				monthlyContribution,
@@ -36,7 +42,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 60/40; US/Intl: 100/0',
 				monthlyContribution,
@@ -48,7 +56,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 40/60; US/Intl: 100/0',
 				monthlyContribution,
@@ -60,7 +70,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 20/80; US/Intl: 100/0',
 				monthlyContribution,
@@ -72,7 +84,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 			new Strategy('Stocks/Bonds: 0/100; US/Intl: 100/0',
 				monthlyContribution,
@@ -84,7 +98,9 @@ module.exports = class StrategyBuilder {
 					}
 				},
 				rebalance,
-				swr
+				swr,
+				null,
+				initialPortfolioValue
 			),
 		];
 

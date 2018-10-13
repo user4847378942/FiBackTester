@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
+const table = require('table');
 
 const EconomicData = require('../model/EconomicData');
 const Investment = require('../model/Investment');
@@ -19,8 +20,12 @@ module.exports = class FiSimulator {
 			let fiProgress = 0;
 			let portfolio = new Portfolio(config.desiredIncomeYear, economicData,
 				investmentCatalog);
-			portfolio.setInitialValue(startDate, config.portfolioValue,
-				strategy.allocations(fiProgress))
+			let portfolioValue = (strategy.initialPortfolioValue) ?
+				strategy.initialPortfolioValue(startDate, config, economicData) :
+				config.portfolioValue;
+			portfolio.setInitialValue(startDate,
+			 	portfolioValue,
+			  	strategy.allocations(fiProgress))
 
 			if (process.env.DEBUG) {
 				console.log(`\n${moment(startDate).format('MM/YYYY')} Cohort`)
@@ -64,6 +69,27 @@ module.exports = class FiSimulator {
 		return results;
 	}
 
+	static formatTime(years) {
+		let fullYears = (years > 0) ? Math.floor(years) : 0;
+		let months = Math.ceil((years - fullYears) * 12);
+		return `${fullYears} yrs. ${months} mos.`
+	}
+
+	static printResult(results) {
+		let result = [
+			['Name', 'Min', 'Max', 'Avg', 'Score *']
+		];
+		for (let s of results) {
+			result.push([s.name,
+			 this.formatTime(s.stats.min),
+			 this.formatTime(s.stats.max),
+			  this.formatTime(s.stats.mean),
+			  s.score.toFixed(2)])
+		}
+		console.log(table.table(result));
+		console.log('* Score = Avg + Max')
+	}
+
 	static async analyze(config, strategies) {
 		let economicData = new EconomicData();
 
@@ -79,8 +105,6 @@ module.exports = class FiSimulator {
 		let dates = await Parser.getHistoricData(economicData,
 			investmentCatalog);
 
-		console.log('\nRunning simulations with config: ' + JSON.stringify(config, null, 2) + '\n')
-
 		// Run simulation
 		let results = [];
 		for (let strategy of strategies) {
@@ -90,12 +114,8 @@ module.exports = class FiSimulator {
 			results.push(strategy)
 		}
 		results = _.orderBy(results, ['score'], ['asc']);
-		console.log('\nFinished! Here are the results...\n')
-		console.log('Name | AVG |  MAX  | RANK')
-		console.log('--------------------------');;
-		for (let s of results) {
-			console.log(`${s.name}: ${s.stats.mean.toFixed(2)} years / ` +
-				`${s.stats.max.toFixed(2)} years ` + `[${s.score.toFixed(2)}]`)
-		}
+		console.log('\nFinished! Here are the results:')
+
+		this.printResult(results);
 	}
 }

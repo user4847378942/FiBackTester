@@ -11,7 +11,8 @@ const config = {
 	portfolioValue: argv.portfolioValue || 500000,
 	monthlySavings: argv.monthlySavings || 14000,
 	desiredIncomeYear: argv.desiredIncomeYear || 46000,
-	savingsIncreaseYear: argv.savingsIncreaseYear || 0.05
+	savingsIncreaseYear: argv.savingsIncreaseYear || 0.05,
+	cape: argv.cape
 }
 
 // Dynamically load the desired strategybuilder
